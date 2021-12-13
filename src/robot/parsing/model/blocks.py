@@ -322,6 +322,26 @@ class TryHandler(HeaderAndBody):
             self.errors += (f'{self.type} block cannot be empty.',)
 
 
+class While(Block):
+    _fields = ('header', 'body', 'end')
+
+    def __init__(self, header, body=None, end=None, errors=()):
+        self.header = header
+        self.body = body or []
+        self.end = end
+        self.errors = errors
+
+    @property
+    def condition(self):
+        return self.header.condition
+
+    def validate(self):
+        if not self.body:
+            self.errors += ('WHILE loop has empty body.',)
+        if not self.end:
+            self.errors += ('WHILE loop has no closing END.',)
+
+
 class ModelWriter(ModelVisitor):
 
     def __init__(self, output):

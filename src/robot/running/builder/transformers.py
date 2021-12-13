@@ -196,6 +196,9 @@ class TestCaseBuilder(NodeVisitor):
     def visit_Try(self, node):
         TryBuilder(self.test).build(node)
 
+    def visit_While(self, node):
+        WhileBuilder(self.test).build(node)
+
     def visit_TemplateArguments(self, node):
         self.test.body.create_keyword(args=node.args, lineno=node.lineno)
 
@@ -461,6 +464,74 @@ class ExceptBuilder(NodeVisitor):
     def visit_KeywordCall(self, node):
         self.model.body.create_keyword(name=node.keyword, args=node.args,
                                        assign=node.assign, lineno=node.lineno)
+
+
+class FinalBodyBuilder(NodeVisitor):
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.model = None
+
+    def build(self, node):
+        self.model = self.parent.finally_block
+        self.model.config(lineno=node.lineno, error=format_error(node.errors))
+        for step in node.body:
+            self.visit(step)
+        return self.model
+
+    def visit_If(self, node):
+        IfBuilder(self.model).build(node)
+
+    def visit_For(self, node):
+        ForBuilder(self.model).build(node)
+
+    def visit_Try(self, node):
+        TryBuilder(self.model).build(node)
+
+    def visit_KeywordCall(self, node):
+        self.model.body.create_keyword(name=node.keyword, args=node.args,
+                                       assign=node.assign, lineno=node.lineno)
+
+
+class WhileBuilder(NodeVisitor):
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.model = None
+
+    def build(self, node):
+        error = format_error(self._get_errors(node))
+        self.model = self.parent.body.create_while(
+            node.condition, lineno=node.lineno, error=error
+        )
+        for step in node.body:
+            self.visit(step)
+        return self.model
+
+    def _get_errors(self, node):
+        errors = node.header.errors + node.errors
+        if node.end:
+            errors += node.end.errors
+        return errors
+
+    def visit_KeywordCall(self, node):
+        self.model.body.create_keyword(name=node.keyword, args=node.args,
+                                       assign=node.assign, lineno=node.lineno)
+
+    def visit_TemplateArguments(self, node):
+        self.model.body.create_keyword(args=node.args, lineno=node.lineno)
+
+    def visit_For(self, node):
+        ForBuilder(self.model).build(node)
+
+    def visit_If(self, node):
+        IfBuilder(self.model).build(node)
+
+    def visit_Try(self, node):
+        TryBuilder(self.model).build(node)
+
+    def visit_ReturnStatement(self, node):
+        self.model.body.create_return(node.values)
 
 
 def format_error(errors):

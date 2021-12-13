@@ -34,6 +34,7 @@ class BodyItem(ModelObject):
     EXCEPT = 'EXCEPT'
     TRY_ELSE = 'TRY ELSE'
     FINALLY = 'FINALLY'
+    WHILE = 'WHILE'
     RETURN = 'RETURN'
     MESSAGE = 'MESSAGE'
     type = None
@@ -71,6 +72,7 @@ class Body(ItemList):
     for_class = None
     if_class = None
     try_class = None
+    while_class = None
     return_class = None
 
     def __init__(self, parent=None, items=None):
@@ -110,6 +112,9 @@ class Body(ItemList):
 
     def create_try(self, *args, **kwargs):
         return self._create(self.try_class, 'create_try', args, kwargs)
+
+    def create_while(self, *args, **kwargs):
+        return self._create(self.while_class, 'create_while', args, kwargs)
 
     def create_return(self, *args, **kwargs):
         return self._create(self.return_class, 'create_return', args, kwargs)

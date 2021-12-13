@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 from ..lexer import Token
-from ..model import TestCase, Keyword, For, If, Try, TryHandler
+from ..model import TestCase, Keyword, For, If, Try, TryHandler, While
 
 
 class Parser:
@@ -40,7 +40,8 @@ class BlockParser(Parser):
             Token.FOR: ForParser,
             Token.IF: IfParser,
             Token.INLINE_IF: IfParser,
-            Token.TRY: TryParser
+            Token.TRY: TryParser,
+            Token.WHILE: WhileParser
         }
 
     def handles(self, statement):
@@ -131,3 +132,9 @@ class ExceptParser(TryParser):
 
     def handles(self, statement):
         return self._try_child_handles(statement)
+
+
+class WhileParser(TryParser):
+
+    def __init__(self, header):
+        NestedBlockParser.__init__(self, While(header))

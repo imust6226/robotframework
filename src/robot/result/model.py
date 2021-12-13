@@ -276,6 +276,23 @@ class Except(model.Except, StatusMixin, DeprecatedAttributesMixin):
 
 
 @Body.register
+class While(model.While, StatusMixin, DeprecatedAttributesMixin):
+    body_class = Body
+    __slots__ = ['status', 'starttime', 'endtime', 'doc']
+
+    def __init__(self, condition=None, parent=None, status='FAIL', starttime=None, endtime=None, doc=''):
+        model.While.__init__(self, condition, parent)
+        self.status = status
+        self.starttime = starttime
+        self.endtime = endtime
+        self.doc = doc
+
+    @property
+    @deprecated
+    def name(self):
+        return f'WHILE {self.condition}'
+
+@Body.register
 class Return(model.Return, StatusMixin, DeprecatedAttributesMixin):
     __slots__ = ['status', 'starttime', 'endtime']
 

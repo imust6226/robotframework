@@ -257,6 +257,7 @@ class LoggerProxy(AbstractLoggerProxy):
         'EXCEPT': 'start_except_block',
         'TRY ELSE': 'start_else_block',
         'FINALLY': 'start_finally_block',
+        'WHILE': 'start_while',
         'RETURN': 'start_return'
     }
     _end_keyword_methods = {
@@ -271,6 +272,7 @@ class LoggerProxy(AbstractLoggerProxy):
         'EXCEPT': 'end_except_block',
         'TRY ELSE': 'end_else_block',
         'FINALLY': 'end_finally_block',
+        'WHILE': 'end_while',
         'RETURN': 'end_return'
     }
 

@@ -197,6 +197,29 @@ class Except(BodyItem):
 
 
 @Body.register
+class While(BodyItem):
+    type = BodyItem.WHILE
+    body_class = Body
+    repr_args = ('condition',)
+    __slots__ = ['condition']
+
+    def __init__(self, condition=None, parent=None):
+        self.condition = condition
+        self.parent = parent
+        self.body = None
+
+    @setter
+    def body(self, body):
+        return self.body_class(self, body)
+
+    def visit(self, visitor):
+        visitor.visit_while(self)
+
+    def __str__(self):
+        return f'WHILE    {self.condiiton}'
+
+
+@Body.register
 class Return(BodyItem):
     type = BodyItem.RETURN
     repr_args = ('values',)

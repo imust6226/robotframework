@@ -21,7 +21,8 @@ from robot.errors import (ExecutionFailed, ExecutionFailures, ExecutionPassed,
                           ExecutionStatus, ExitForLoop, ContinueForLoop, DataError,
                           ReturnFromKeyword)
 from robot.result import (For as ForResult, If as IfResult, IfBranch as IfBranchResult,
-                          Try as TryResult, Except as TryHandlerResult, Block as BlockResult)
+                          Try as TryResult, Except as TryHandlerResult, Block as BlockResult,
+                          While as WhileResult)
 from robot.output import librarylogger as logger
 from robot.utils import (cut_assign_value, frange, get_error_message, is_string,
                          is_list_like, is_number, plural_or_not as s,
@@ -494,3 +495,17 @@ class TryRunner:
                 if matchers[f'{prefix}:'](message, pat):
                     return True
         return False
+
+
+class WhileRunner:
+
+    def __init__(self, context, run=True, templated=False):
+        self._context = context
+        self._run = run
+        self._templated = templated
+
+    def run(self, data):
+        run = self._run
+        with StatusReporter(data, WhileResult(data.condition), self._context, run):
+            print('yeah')
+        return run
